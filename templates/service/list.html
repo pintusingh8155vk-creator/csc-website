@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Services - CyberCafe ERP{% endblock %}
+{% block page_title %}Services{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between gap-4">
+        <form method="GET" class="flex gap-4 flex-1">
+            <select name="status" class="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <option value="all" {% if status == 'all' %}selected{% endif %}>All Status</option>
+                <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="in-progress" {% if status == 'in-progress' %}selected{% endif %}>In Progress</option>
+                <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+            </select>
+            <input type="text" name="search" value="{{ search }}" placeholder="Search services..." class="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                <i class="fas fa-search mr-2"></i>Search
+            </button>
+        </form>
+        <a href="{{ url_for('service.create_service') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition whitespace-nowrap">
+            <i class="fas fa-plus mr-2"></i>Create Service
+        </a>
+    </div>
+    
+    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Customer</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Service Type</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Amount</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Status</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Date</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                {% if services.items %}
+                    {% for service in services.items %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">{{ service.customer.full_name }}</td>
+                        <td class="px-6 py-4">{{ service.service_type }}</td>
+                        <td class="px-6 py-4 font-bold text-green-600">₹{{ "%.2f"|format(service.amount) }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded text-sm font-bold {% if service.status == 'completed' %}bg-green-100 text-green-700{% elif service.status == 'pending' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                                {{ service.status|capitalize }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm">{{ service.submission_date.strftime('%d %b %Y') }}</td>
+                        <td class="px-6 py-4 flex gap-2">
+                            <a href="{{ url_for('service.view_service', service_id=service.id) }}" class="text-blue-600 hover:text-blue-800 font-bold">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('service.delete_service', service_id=service.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure?');">
+                                <button type="submit" class="text-red-600 hover:text-red-800 font-bold">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No services found</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

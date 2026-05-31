@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Service Details - CyberCafe ERP{% endblock %}
+{% block page_title %}Service Details{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Service Info -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-bold">{{ service.service_type }}</h3>
+                <span class="px-4 py-2 rounded font-bold {% if service.status == 'completed' %}bg-green-100 text-green-700{% elif service.status == 'pending' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                    {{ service.status|capitalize }}
+                </span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <p class="text-gray-600 text-sm">Customer</p>
+                    <p class="font-bold">{{ service.customer.full_name }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Amount</p>
+                    <p class="font-bold text-green-600">₹{{ "%.2f"|format(service.amount) }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Submission Date</p>
+                    <p class="font-bold">{{ service.submission_date.strftime('%d %b %Y') }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Completion Date</p>
+                    <p class="font-bold">{{ service.completion_date.strftime('%d %b %Y') if service.completion_date else 'Pending' }}</p>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <p class="text-gray-600 text-sm mb-2">Notes</p>
+                <p>{{ service.notes or 'No notes' }}</p>
+            </div>
+            
+            <!-- Edit Form -->
+            <form method="POST" class="space-y-4 border-t pt-6">
+                <h4 class="font-bold text-lg mb-4">Update Service</h4>
+                
+                <input type="text" name="service_type" value="{{ service.service_type }}" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                
+                <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <option value="pending" {% if service.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="in-progress" {% if service.status == 'in-progress' %}selected{% endif %}>In Progress</option>
+                    <option value="completed" {% if service.status == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+                
+                <input type="number" name="amount" step="0.01" value="{{ service.amount }}" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                
+                <textarea name="notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">{{ service.notes or '' }}</textarea>
+                
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    Update Service
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Payments Sidebar -->
+    <div class="bg-white rounded-lg card-shadow p-6 h-fit">
+        <h3 class="text-xl font-bold mb-4">Payments</h3>
+        
+        <!-- Payment Form -->
+        <form method="POST" action="{{ url_for('service.record_payment', service_id=service.id) }}" class="space-y-4 mb-6 pb-6 border-b">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Amount</label>
+                <input type="number" name="amount" step="0.01" min="0" required class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600" value="{{ service.amount }}">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Method</label>
+                <select name="payment_method" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <option value="cash">Cash</option>
+                    <option value="upi">UPI</option>
+                    <option value="card">Card</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                </select>
+            </div>
+            
+            <input type="text" name="transaction_id" placeholder="Transaction ID" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+            
+            <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700 transition">
+                Record Payment
+            </button>
+        </form>
+        
+        <!-- Payment History -->
+        <div>
+            <h4 class="font-bold mb-3">Payment History</h4>
+            {% if payments %}
+                <div class="space-y-3">
+                    {% for payment in payments %}
+                    <div class="p-3 bg-gray-50 rounded">
+                        <p class="font-bold text-green-600">₹{{ "%.2f"|format(payment.amount) }}</p>
+                        <p class="text-xs text-gray-600">{{ payment.payment_method|title }}</p>
+                        <p class="text-xs text-gray-500">{{ payment.created_at.strftime('%d %b %Y') }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-4">No payments recorded</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

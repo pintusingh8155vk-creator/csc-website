@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users - CyberCafe ERP{% endblock %}
+{% block page_title %}Manage Users{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <form method="GET" class="flex gap-4">
+        <input type="text" name="search" value="{{ search }}" placeholder="Search users..." class="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+            <i class="fas fa-search mr-2"></i>Search
+        </button>
+    </form>
+    
+    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Name</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Email</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Shop</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Mobile</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Status</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                {% for user in users.items %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">{{ user.full_name }}</td>
+                    <td class="px-6 py-4">{{ user.email }}</td>
+                    <td class="px-6 py-4">{{ user.shop_name }}</td>
+                    <td class="px-6 py-4">{{ user.mobile_number }}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded text-sm font-bold {% if user.is_active %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                            {{ 'Active' if user.is_active else 'Inactive' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <a href="{{ url_for('admin.view_user', user_id=user.id) }}" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

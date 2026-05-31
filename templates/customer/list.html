@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Customers - CyberCafe ERP{% endblock %}
+{% block page_title %}Customers{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div class="flex-1">
+            <form method="GET" class="flex gap-4">
+                <input type="text" name="search" value="{{ search }}" placeholder="Search customers..." class="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    <i class="fas fa-search mr-2"></i>Search
+                </button>
+            </form>
+        </div>
+        <a href="{{ url_for('customer.create_customer') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+            <i class="fas fa-plus mr-2"></i>Add Customer
+        </a>
+    </div>
+    
+    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Name</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Mobile</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Village</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Services</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold text-gray-600">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                {% if customers.items %}
+                    {% for customer in customers.items %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">{{ customer.full_name }}</td>
+                        <td class="px-6 py-4">{{ customer.mobile_number or '-' }}</td>
+                        <td class="px-6 py-4">{{ customer.village or '-' }}</td>
+                        <td class="px-6 py-4">{{ customer.services|length }}</td>
+                        <td class="px-6 py-4 flex gap-2">
+                            <a href="{{ url_for('customer.view_customer', customer_id=customer.id) }}" class="text-blue-600 hover:text-blue-800 font-bold">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('customer.delete_customer', customer_id=customer.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure?');">
+                                <button type="submit" class="text-red-600 hover:text-red-800 font-bold">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No customers found</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if customers.pages > 1 %}
+    <div class="flex justify-center gap-2">
+        {% if customers.has_prev %}
+            <a href="{{ url_for('customer.list_customers', page=customers.prev_num, search=search) }}" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition">Previous</a>
+        {% endif %}
+        
+        {% for page_num in customers.iter_pages() %}
+            {% if page_num %}
+                {% if page_num == customers.page %}
+                    <span class="px-4 py-2 bg-blue-600 text-white rounded">{{ page_num }}</span>
+                {% else %}
+                    <a href="{{ url_for('customer.list_customers', page=page_num, search=search) }}" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition">{{ page_num }}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        
+        {% if customers.has_next %}
+            <a href="{{ url_for('customer.list_customers', page=customers.next_num, search=search) }}" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

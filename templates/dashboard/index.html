@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - CyberCafe ERP{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-bold">Total Customers</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ total_customers }}</p>
+                </div>
+                <div class="text-4xl text-blue-200"><i class="fas fa-users"></i></div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-bold">Today's Earnings</p>
+                    <p class="text-3xl font-bold text-green-600">₹{{ "%.2f"|format(today_earnings) }}</p>
+                </div>
+                <div class="text-4xl text-green-200"><i class="fas fa-money-bill-wave"></i></div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-bold">Pending Services</p>
+                    <p class="text-3xl font-bold text-yellow-600">{{ pending_services }}</p>
+                </div>
+                <div class="text-4xl text-yellow-200"><i class="fas fa-hourglass-start"></i></div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-bold">Completed Services</p>
+                    <p class="text-3xl font-bold text-green-600">{{ completed_services }}</p>
+                </div>
+                <div class="text-4xl text-green-200"><i class="fas fa-check-circle"></i></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <h3 class="text-xl font-bold mb-4">Daily Revenue (Last 7 Days)</h3>
+            <canvas id="revenueChart"></canvas>
+        </div>
+        
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <h3 class="text-xl font-bold mb-4">Service Breakdown</h3>
+            <canvas id="serviceChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Subscription & Notifications -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <h3 class="text-xl font-bold mb-4">Subscription Status</h3>
+            {% if subscription %}
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-gray-600 text-sm">Current Plan</p>
+                        <p class="text-2xl font-bold text-blue-600 capitalize">{{ subscription.plan_name }}</p>
+                    </div>
+                    {% if subscription.expiry_date %}
+                    <div>
+                        <p class="text-gray-600 text-sm">Days Remaining</p>
+                        <p class="text-2xl font-bold text-green-600">{{ subscription.days_remaining() }}</p>
+                    </div>
+                    {% else %}
+                    <div class="text-green-600">
+                        <i class="fas fa-infinity mr-2"></i>Unlimited
+                    </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <h3 class="text-xl font-bold mb-4">Recent Notifications</h3>
+            <div class="space-y-3">
+                {% if notifications %}
+                    {% for notification in notifications %}
+                    <div class="p-3 bg-blue-50 border-l-4 border-blue-600 rounded">
+                        <p class="font-bold text-sm">{{ notification.title }}</p>
+                        <p class="text-gray-600 text-sm">{{ notification.message }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-500 text-sm">No notifications</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg card-shadow p-6">
+        <h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+        <div class="flex flex-wrap gap-4">
+            <a href="{{ url_for('customer.create_customer') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                <i class="fas fa-plus mr-2"></i>Add Customer
+            </a>
+            <a href="{{ url_for('service.create_service') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                <i class="fas fa-cog mr-2"></i>Create Service
+            </a>
+            <a href="{{ url_for('customer.list_customers') }}" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
+                <i class="fas fa-list mr-2"></i>View Customers
+            </a>
+            <a href="{{ url_for('service.list_services') }}" class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition">
+                <i class="fas fa-tasks mr-2"></i>View Services
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Revenue Chart
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+const revenueChart = new Chart(revenueCtx, {
+    type: 'line',
+    data: {
+        labels: {{ revenue_data|map(attribute='date')|list|tojson }},
+        datasets: [{
+            label: 'Revenue (₹)',
+            data: {{ revenue_data|map(attribute='revenue')|list|tojson }},
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+</script>
+{% endblock %}

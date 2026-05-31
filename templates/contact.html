@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - CyberCafe ERP{% endblock %}
+{% block page_title %}Contact Us{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white rounded-lg card-shadow p-8">
+            <h2 class="text-2xl font-bold mb-6">Get in Touch</h2>
+            <div class="space-y-6">
+                <div>
+                    <p class="font-bold mb-2"><i class="fas fa-envelope text-blue-600 mr-2"></i>Email</p>
+                    <p class="text-gray-600">support@cybercafeerp.com</p>
+                </div>
+                <div>
+                    <p class="font-bold mb-2"><i class="fas fa-phone text-blue-600 mr-2"></i>Phone</p>
+                    <p class="text-gray-600">+91-1234567890</p>
+                </div>
+                <div>
+                    <p class="font-bold mb-2"><i class="fas fa-map-marker-alt text-blue-600 mr-2"></i>Address</p>
+                    <p class="text-gray-600">New Delhi, India</p>
+                </div>
+                <div>
+                    <p class="font-bold mb-2"><i class="fas fa-clock text-blue-600 mr-2"></i>Hours</p>
+                    <p class="text-gray-600">Mon - Fri: 9:00 AM - 6:00 PM<br>Sat - Sun: Closed</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg card-shadow p-8">
+            <h2 class="text-2xl font-bold mb-6">Send us a Message</h2>
+            <form class="space-y-4">
+                <input type="text" placeholder="Your Name" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <input type="email" placeholder="Your Email" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <textarea rows="4" placeholder="Your Message" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+                <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 transition">Send Message</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

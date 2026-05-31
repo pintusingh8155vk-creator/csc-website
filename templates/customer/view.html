@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Details - CyberCafe ERP{% endblock %}
+{% block page_title %}Customer Details{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Customer Info -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <h3 class="text-2xl font-bold mb-4">{{ customer.full_name }}</h3>
+            <div class="space-y-3 text-sm">
+                <div>
+                    <p class="text-gray-600">Mobile</p>
+                    <p class="font-bold">{{ customer.mobile_number or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600">Aadhaar</p>
+                    <p class="font-bold">****{{ customer.aadhaar_last_4 or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600">Village</p>
+                    <p class="font-bold">{{ customer.village or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600">Registered</p>
+                    <p class="font-bold">{{ customer.created_at.strftime('%d %b %Y') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Services & Edit -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Edit Form -->
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <h3 class="text-xl font-bold mb-4">Edit Information</h3>
+            <form method="POST" class="space-y-4">
+                <input type="text" name="full_name" value="{{ customer.full_name }}" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <input type="tel" name="mobile_number" value="{{ customer.mobile_number or '' }}" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <input type="text" name="village" value="{{ customer.village or '' }}" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="Village">
+                <textarea name="address" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">{{ customer.address or '' }}</textarea>
+                <textarea name="notes" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">{{ customer.notes or '' }}</textarea>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+        
+        <!-- Services -->
+        <div class="bg-white rounded-lg card-shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold">Services ({{ services|length }})</h3>
+                <a href="{{ url_for('service.create_service') }}?customer_id={{ customer.id }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm">
+                    <i class="fas fa-plus mr-2"></i>Add Service
+                </a>
+            </div>
+            
+            <div class="space-y-3">
+                {% if services %}
+                    {% for service in services %}
+                    <div class="border rounded p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-bold">{{ service.service_type }}</p>
+                                <p class="text-sm text-gray-600">Amount: ₹{{ service.amount }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-3 py-1 rounded text-sm font-bold {% if service.status == 'completed' %}bg-green-100 text-green-700{% elif service.status == 'pending' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                                    {{ service.status|capitalize }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-500 text-center py-4">No services yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

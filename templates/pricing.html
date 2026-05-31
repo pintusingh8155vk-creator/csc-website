@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Pricing - CyberCafe ERP{% endblock %}
+{% block page_title %}Simple, Transparent Pricing{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-4">Choose Your Plan</h1>
+        <p class="text-gray-600 text-lg">Start free and upgrade as you grow</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        {% for plan_name, plan_info in plans.items() %}
+        <div class="bg-white rounded-lg card-shadow p-8 {% if plan_name == 'professional' %}ring-2 ring-blue-600 transform scale-105{% endif %}">
+            <h3 class="text-2xl font-bold mb-2 capitalize">{{ plan_name }}</h3>
+            <p class="text-4xl font-bold text-blue-600 mb-1">₹{{ plan_info.price }}</p>
+            <p class="text-gray-600 mb-6">{% if plan_info.price == 0 %}Forever Free{% else %}Per Month{% endif %}</p>
+            
+            <a href="{{ url_for('auth.register') }}" class="w-full py-2 px-4 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 transition mb-6 block text-center">
+                {% if plan_name == 'free' %}Get Started{% else %}Upgrade Now{% endif %}
+            </a>
+            
+            <ul class="space-y-3">
+                {% for feature in plan_info.features %}
+                <li class="flex items-center text-gray-600">
+                    <i class="fas fa-check text-green-500 mr-3"></i>
+                    {{ feature }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="mt-12 bg-blue-50 p-8 rounded-lg text-center">
+        <h3 class="text-2xl font-bold mb-4">Need Enterprise Solution?</h3>
+        <p class="text-gray-600 mb-6">Contact us for custom solutions tailored to your business needs</p>
+        <a href="{{ url_for('contact') }}" class="px-6 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 transition">Contact Sales</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Server Error - CyberCafe ERP{% endblock %}
+{% block page_title %}Server Error{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="text-center">
+        <h1 class="text-6xl font-bold text-gray-800 mb-4">500</h1>
+        <p class="text-2xl text-gray-600 mb-8">Server Error</p>
+        <p class="text-gray-600 mb-8">Something went wrong. Please try again later.</p>
+        <a href="{{ url_for('index') }}" class="px-6 py-3 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 transition">
+            Go Home
+        </a>
+    </div>
+</div>
+{% endblock %}
