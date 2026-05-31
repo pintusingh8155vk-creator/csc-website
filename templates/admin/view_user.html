@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}View User - CyberCafe ERP{% endblock %}
+{% block page_title %}User Details{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">{{ user.full_name }}</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-gray-600 text-sm">Email</p>
+                    <p class="font-bold">{{ user.email }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Shop Name</p>
+                    <p class="font-bold">{{ user.shop_name }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Mobile</p>
+                    <p class="font-bold">{{ user.mobile_number }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">District</p>
+                    <p class="font-bold">{{ user.district or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Joined</p>
+                    <p class="font-bold">{{ user.created_at.strftime('%d %b %Y') }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-600 text-sm">Status</p>
+                    <p class="font-bold {% if user.is_active %}text-green-600{% else %}text-red-600{% endif %}">
+                        {{ 'Active' if user.is_active else 'Inactive' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg card-shadow p-6 h-fit">
+        <h3 class="text-xl font-bold mb-4">Statistics</h3>
+        <div class="space-y-4">
+            <div>
+                <p class="text-gray-600 text-sm">Total Customers</p>
+                <p class="text-3xl font-bold text-blue-600">{{ stats.total_customers }}</p>
+            </div>
+            <div>
+                <p class="text-gray-600 text-sm">Total Services</p>
+                <p class="text-3xl font-bold text-green-600">{{ stats.total_services }}</p>
+            </div>
+            <div>
+                <p class="text-gray-600 text-sm">Total Revenue</p>
+                <p class="text-3xl font-bold text-purple-600">₹{{ "%.2f"|format(stats.total_payments) }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
