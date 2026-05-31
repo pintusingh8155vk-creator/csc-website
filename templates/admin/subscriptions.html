@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Subscriptions - CyberCafe ERP{% endblock %}
+{% block page_title %}Manage Subscriptions{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <form method="GET" class="flex gap-4">
+        <select name="plan" class="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+            <option value="all" {% if current_plan == 'all' %}selected{% endif %}>All Plans</option>
+            {% for plan in plans %}
+                <option value="{{ plan }}" {% if current_plan == plan %}selected{% endif %}>{{ plan|capitalize }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+            Filter
+        </button>
+    </form>
+    
+    <div class="bg-white rounded-lg card-shadow overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-bold">User</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Plan</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Start Date</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Expiry Date</th>
+                    <th class="px-6 py-3 text-left text-sm font-bold">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                {% for subscription in subscriptions.items %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">{{ subscription.user.full_name }}</td>
+                    <td class="px-6 py-4 capitalize font-bold">{{ subscription.plan_name }}</td>
+                    <td class="px-6 py-4">{{ subscription.start_date.strftime('%d %b %Y') }}</td>
+                    <td class="px-6 py-4">{{ subscription.expiry_date.strftime('%d %b %Y') if subscription.expiry_date else 'Unlimited' }}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded text-sm font-bold {% if subscription.is_active %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                            {{ 'Active' if subscription.is_active else 'Inactive' }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
