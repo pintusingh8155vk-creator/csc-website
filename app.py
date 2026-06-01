@@ -6,6 +6,7 @@ from config import config
 from routes import blueprints
 from models import User, Subscription
 from whitenoise import WhiteNoise
+from sqlalchemy import text
 import logging
 
 # Setup logging
@@ -119,7 +120,8 @@ def create_app(config_name=None):
     with app.app_context():
         try:
             # Test database connection
-            db.engine.execute("SELECT 1")
+            with db.engine.connect() as connection:
+                connection.execute(text("SELECT 1"))
             logger.info("✅ Database connection successful")
             
             # Create all tables
