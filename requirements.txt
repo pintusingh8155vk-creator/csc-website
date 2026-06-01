@@ -9,7 +9,7 @@ psycopg2-binary==2.9.9
 gunicorn==21.2.0
 WhiteNoise==6.6.0
 python-dotenv==1.0.0
-Werkzeug==3.0.1
+Werkzeug==3.1.0
 Jinja2==3.1.2
 click==8.1.7
 SQLAlchemy==2.0.25
